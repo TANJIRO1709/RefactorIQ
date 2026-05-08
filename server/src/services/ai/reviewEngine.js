@@ -1,7 +1,12 @@
 import client from "./openai.service.js";
 
 export const reviewCode = async (code, language) => {
-  const prompt = `
+  try {
+    const model = client.getGenerativeModel({
+      model: "gemini-flash-latest",
+    });
+
+    const prompt = `
 You are an expert senior software engineer.
 
 Review this ${language} code.
@@ -12,7 +17,8 @@ Find:
 - Performance issues
 - Best practice violations
 
-Return JSON format:
+Return ONLY valid JSON in this exact format:
+
 {
   "summary": "",
   "issues": [
@@ -30,18 +36,14 @@ CODE:
 ${code}
 `;
 
-  const response = await client.chat.completions.create({
-    model: "gpt-4.1-mini",
+    const result = await model.generateContent(prompt);
 
-    messages: [
-      {
-        role: "user",
-        content: prompt,
-      },
-    ],
+    const response = result.response.text();
 
-    temperature: 0.2,
-  });
+    return response;
+  } catch (error) {
+    console.error("REVIEW ENGINE ERROR:", error);
 
-  return response.choices[0].message.content;
+    throw new Error("Failed to review code");
+  }
 };

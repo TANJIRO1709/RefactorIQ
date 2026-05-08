@@ -1,35 +1,49 @@
 import client from "./openai.service.js";
 
 export const streamReview = async (code, language, res) => {
-  const stream = await client.chat.completions.create({
-    model: "gpt-4.1-mini",
+  try {
+    const model = client.getGenerativeModel({
+      model: "gemini-flash-latest",
+    });
 
-    stream: true,
+    const prompt = `
+You are a senior code reviewer.
 
-    messages: [
-      {
-        role: "system",
-        content:
-          "You are a senior code reviewer. Review code professionally.",
-      },
+Review this ${language} code professionally.
 
-      {
-        role: "user",
-        content: `
-Review this ${language} code.
+Find:
+- Bugs
+- Performance issues
+- Security vulnerabilities
+- Best practice violations
+- Refactoring suggestions
 
 CODE:
 ${code}
-        `,
-      },
-    ],
-  });
+`;
 
-  for await (const chunk of stream) {
-    const content = chunk.choices[0]?.delta?.content || "";
+    const result = await model.generateContentStream(prompt);
 
-    res.write(`data: ${JSON.stringify({ content })}\n\n`);
+    for await (const chunk of result.stream) {
+      const content = chunk.text();
+
+      res.write(
+        `data: ${JSON.stringify({ content })}\n\n`
+      );
+    }
+
+    res.write(`data: [DONE]\n\n`);
+
+    res.end();
+  } catch (error) {
+    console.error("STREAM REVIEW ERROR:", error);
+
+    res.write(
+      `data: ${JSON.stringify({
+        error: "Streaming failed",
+      })}\n\n`
+    );
+
+    res.end();
   }
-
-  res.write(`data: [DONE]\n\n`);
 };

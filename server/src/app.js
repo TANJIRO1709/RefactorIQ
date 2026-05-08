@@ -7,7 +7,6 @@ import morgan from "morgan";
 import reviewRoutes from "./routes/review.routes.js";
 import streamRoutes from "./routes/stream.routes.js";
 
-app.use("/api/stream", streamRoutes);
 dotenv.config();
 
 const app = express();
@@ -25,5 +24,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/review", reviewRoutes);
+
+app.use("/api/stream", streamRoutes);
 
 export default app;

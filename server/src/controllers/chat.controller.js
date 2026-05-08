@@ -4,31 +4,36 @@ export const chatWithAI = async (req, res) => {
   try {
     const { message } = req.body;
 
-    const response = await client.chat.completions.create({
-      model: "gpt-4.1-mini",
+    if (!message) {
+      return res.status(400).json({
+        message: "Message is required",
+      });
+    }
 
-      messages: [
-        {
-          role: "system",
-          content:
-            "You are an expert software engineering mentor.",
-        },
-
-        {
-          role: "user",
-          content: message,
-        },
-      ],
+    const model = client.getGenerativeModel({
+      model: "gemini-flash-latest",
     });
 
-    res.json({
-      reply: response.choices[0].message.content,
+    const prompt = `
+You are an expert software engineering mentor.
+
+User Question:
+${message}
+`;
+
+    const result = await model.generateContent(prompt);
+
+    const response = result.response.text();
+
+    res.status(200).json({
+      reply: response,
     });
   } catch (error) {
-    console.log(error);
+    console.error("GEMINI ERROR:", error);
 
     res.status(500).json({
       message: "Chat Failed",
+      error: error.message,
     });
   }
 };
