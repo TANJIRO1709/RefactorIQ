@@ -9,36 +9,26 @@ export function useReview() {
   const startReview = async (code, language) => {
     setLoading(true)
     setError(null)
-    setReview('')
+    setReview(null)
 
     try {
-      // POST to Express backend — returns SSE stream
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/review`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ code, language }),
       })
 
-      if (!res.ok) throw new Error('Review request failed')
+      const data = await res.json()
 
-      const reader  = res.body.getReader()
-      const decoder = new TextDecoder()
-
-      while (true) {
-        const { done, value } = await reader.read()
-        if (done) break
-        const chunk = decoder.decode(value, { stream: true })
-        // SSE lines come as "data: <text>\n\n"
-        chunk.split('\n').forEach(line => {
-          if (line.startsWith('data: ')) {
-            const txt = line.replace('data: ', '')
-            if (txt === '[DONE]') return
-            setReview(prev => (prev || '') + txt)
-          }
-        })
+      if (!res.ok || !data.success) {
+        throw new Error(data.message || data.error || `Server error ${res.status}`)
       }
+
+      // data.review is the full review object from your backend
+      setReview(data.review)
+
     } catch (err) {
-      setError(err.message)
+      setError(err instanceof Error ? err.message : 'Something went wrong')
     } finally {
       setLoading(false)
     }

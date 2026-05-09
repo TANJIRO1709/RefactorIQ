@@ -202,7 +202,7 @@ export default function LandingPage() {
         </div>
 
         {/* Right — Code Terminal Card */}
-        <div className="float-card" style={{ position: 'relative' }}>
+      
 
           {/* Glow */}
           <div style={{ position: 'absolute', inset: '-40px', background: 'radial-gradient(circle at 50% 50%, rgba(124,58,237,0.15) 0%, transparent 70%)', borderRadius: '50%', pointerEvents: 'none' }} />
@@ -224,15 +224,46 @@ export default function LandingPage() {
             {/* Code */}
             <div style={{ padding: '20px 24px', position: 'relative', overflow: 'hidden' }}>
               {/* Scanner line */}
-              <div className="scan-line" style={{ position: 'absolute', left: 0, right: 0, height: 2, background: 'linear-gradient(90deg, transparent, rgba(167,139,250,0.6), transparent)', pointerEvents: 'none' }} />
+            {/* Code */}
+<div
+  style={{
+    padding: "20px 24px",
+    position: "relative",
+    overflow: "hidden",
+  }}
+>
+  {/* Scanner line */}
+  <div
+    className="scan-line"
+    style={{
+      position: "absolute",
+      left: 0,
+      right: 0,
+      height: 2,
+      background:
+        "linear-gradient(90deg, transparent, rgba(167,139,250,0.6), transparent)",
+      pointerEvents: "none",
+    }}
+  />
 
-              <pre className="font-mono-custom" style={{ margin: 0, fontSize: 13, lineHeight: 1.8, color: 'rgba(255,255,255,0.7)' }}>
-<span className="code-keyword">const</span> <span className="code-highlight">password</span> = <span className="code-string">"123456"</span>{'\n\n'}<span className="code-fn">app</span>.<span className="code-fn">post</span>(<span className="code-string">"/login"</span>, (<span className="code-highlight">req</span>, <span className="code-highlight">res</span>) {'=>'} {'{'}{'\n'}
-  <span className="code-keyword">if</span>(<span className="code-highlight">password</span> === <span className="code-highlight">req</span>.<span className="code-highlight">body</span>.<span className="code-highlight">password</span>){'{'}{'\n'}
-    <span className="code-keyword">return</span> <span className="code-keyword">true</span>{'\n'}
-  {'}'}{'\n'}
-{'}'})</pre>
-            </div>
+  <pre
+    className="font-mono-custom"
+    style={{
+      margin: 0,
+      fontSize: 13,
+      lineHeight: 1.8,
+      color: "rgba(255,255,255,0.7)",
+    }}
+  >
+{`const password = "123456"
+
+app.post("/login", (req, res) => {
+  if(password === req.body.password){
+    return true
+  }
+})`}
+  </pre>
+</div>
 
             {/* Findings */}
             <div style={{ padding: '0 20px 20px', display: 'flex', flexDirection: 'column', gap: 10 }}>
