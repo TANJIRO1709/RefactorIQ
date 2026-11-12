@@ -19,10 +19,10 @@ export default function ReviewHistory({ reviews }: { reviews: Review[] }) {
               </span>
               <span className="text-xs text-gray-600">{formatDate(r.createdAt)}</span>
             </div>
-            <p className="text-sm text-gray-400 font-mono">{truncate(r.code, 70)}</p>
+            <p className="text-sm text-gray-400 font-mono">{truncate(r.originalCode ?? '', 70)}</p>
           </div>
           <div className="flex items-center gap-3">
-            <span className="text-lg font-semibold text-white">{r.score}<span className="text-xs text-gray-600">/100</span></span>
+            <span className="text-lg font-semibold text-white">{r.score ?? '—'}<span className="text-xs text-gray-600">/100</span></span>
             <Link href={`/review?id=${r._id}`} className="text-gray-600 group-hover:text-violet-400 transition">
               <ArrowRight size={16} />
             </Link>

@@ -93,7 +93,7 @@ export default function ReviewPanel({ review, loading, error }) {
       </div>
       <div style={{ textAlign: 'center' }}>
         <p style={{ fontSize: 16, fontWeight: 600, color: '#fff', margin: '0 0 6px' }}>Analyzing your code…</p>
-        <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.35)', margin: 0 }}>Claude AI is reviewing for bugs, security & best practices</p>
+        <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.35)', margin: 0 }}>AI is reviewing for bugs, security & best practices</p>
       </div>
     </div>
   )

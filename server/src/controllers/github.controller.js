@@ -5,7 +5,8 @@ import client from "../services/ai/openai.service.js";
 // Existing: Analyze a PR
 export const analyzePR = async (req, res) => {
   try {
-    const { token, owner, repo, pull_number } = req.body;
+    const { owner, repo, pull_number } = req.body;
+    const token = req.body.token || req.githubToken;
 
     const files = await getPRFiles({ token, owner, repo, pull_number });
     const reviews = [];
@@ -26,19 +27,32 @@ export const analyzePR = async (req, res) => {
 // NEW: Stream review of an entire GitHub repo by URL
 export const analyzeRepoStream = async (req, res) => {
   try {
-    const { repoUrl, token } = req.body;
+    const { repoUrl } = req.body;
+    // Fall back to the signed-in user's token: 5000 req/hr instead of 60
+    const token = req.body.token || req.githubToken;
 
     if (!repoUrl) {
       return res.status(400).json({ success: false, message: "repoUrl is required" });
     }
 
     // Parse URL → owner/repo
-    const { owner, repo } = parseRepoUrl(repoUrl);
+    let owner, repo;
+    try {
+      ({ owner, repo } = parseRepoUrl(repoUrl));
+    } catch (err) {
+      return res.status(400).json({ success: false, message: err.message });
+    }
 
     // SSE headers
     res.setHeader("Content-Type", "text/event-stream");
     res.setHeader("Cache-Control", "no-cache");
     res.setHeader("Connection", "keep-alive");
+    res.setHeader("X-Accel-Buffering", "no");
+    res.flushHeaders();
+
+    // Stop spending AI calls once the user leaves the page
+    let closed = false;
+    res.on("close", () => { closed = true; });
 
     const send = (data) => res.write(`data: ${JSON.stringify(data)}\n\n`);
 
@@ -63,6 +77,7 @@ export const analyzeRepoStream = async (req, res) => {
 
     // Review each file with streaming
     for (let i = 0; i < files.length; i++) {
+      if (closed) return;
       const file = files[i];
 
       send({
@@ -132,7 +147,8 @@ ${file.content.slice(0, 8000)}
 // NEW: Non-streaming repo review (returns full JSON)
 export const analyzeRepo = async (req, res) => {
   try {
-    const { repoUrl, token } = req.body;
+    const { repoUrl } = req.body;
+    const token = req.body.token || req.githubToken;
 
     if (!repoUrl) {
       return res.status(400).json({ success: false, message: "repoUrl is required" });

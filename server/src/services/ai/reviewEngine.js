@@ -4,6 +4,8 @@ export const reviewCode = async (code, language) => {
   try {
     const model = client.getGenerativeModel({
       model: "gemini-flash-latest",
+      // Forces raw JSON output (no ```json fences) so JSON.parse works
+      generationConfig: { responseMimeType: "application/json" },
     });
 
     const prompt = `
@@ -21,10 +23,11 @@ Return ONLY valid JSON in this exact format:
 
 {
   "summary": "",
+  "score": 0,
   "issues": [
     {
-      "type": "",
-      "severity": "",
+      "type": "bug | security | performance | style",
+      "severity": "Critical | High | Medium | Low",
       "line": 0,
       "message": ""
     }
@@ -32,15 +35,15 @@ Return ONLY valid JSON in this exact format:
   "fixedCode": ""
 }
 
+"score" is overall code quality from 0 (unusable) to 100 (excellent).
+
 CODE:
 ${code}
 `;
 
     const result = await model.generateContent(prompt);
 
-    const response = result.response.text();
-
-    return response;
+    return result.response.text();
   } catch (error) {
     console.error("REVIEW ENGINE ERROR:", error);
 

@@ -22,6 +22,8 @@ const reviewSchema = new mongoose.Schema(
 
     summary: String,
 
+    score: Number,
+
     issues: [issueSchema],
   },
   {

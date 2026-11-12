@@ -1,32 +1,20 @@
 'use client'
 import { useState } from 'react'
+import api from '@/lib/api'
 
 export function useReview() {
   const [review, setReview]   = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError]     = useState(null)
 
-  const startReview = async (code, language) => {
+  const run = async (request) => {
     setLoading(true)
     setError(null)
     setReview(null)
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/review`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code, language }),
-      })
-
-      const data = await res.json()
-
-      if (!res.ok || !data.success) {
-        throw new Error(data.message || data.error || `Server error ${res.status}`)
-      }
-
-      // data.review is the full review object from your backend
+      const { data } = await request()
       setReview(data.review)
-
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong')
     } finally {
@@ -34,5 +22,10 @@ export function useReview() {
     }
   }
 
-  return { review, loading, error, startReview }
+  const startReview = (code, language) => run(() => api.post('/api/review', { code, language }))
+
+  // Open a saved review (from dashboard history)
+  const loadReview = (id) => run(() => api.get(`/api/review/${encodeURIComponent(id)}`))
+
+  return { review, loading, error, startReview, loadReview }
 }

@@ -23,7 +23,7 @@ import {
 } from 'recharts'
 
 export default function DashboardPage() {
-  const { reviews, stats, loading } = useDashboard()
+  const { reviews, stats, loading, error } = useDashboard()
 
   if (loading) {
     return (
@@ -42,6 +42,12 @@ export default function DashboardPage() {
           Dashboard
         </h1>
 
+        {error && (
+          <p className="text-sm text-red-400 border border-red-900/50 bg-red-900/20 rounded-xl px-4 py-3">
+            {error}
+          </p>
+        )}
+
         {stats && (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <StatsCard
@@ -54,21 +60,18 @@ export default function DashboardPage() {
               title="Average Score"
               value={`${stats.avgScore}/100`}
               icon={BarChart2}
-              trend="up"
-              sub="+4 this week"
             />
 
             <StatsCard
-              title="Issues Fixed"
-              value={stats.issuesByType?.bug ?? 0}
+              title="Issues Found"
+              value={stats.totalIssues}
               icon={ShieldCheck}
             />
 
             <StatsCard
-              title="Streak"
-              value="7 days"
+              title="Top Language"
+              value={stats.topLanguages[0]?.language ?? '—'}
               icon={TrendingUp}
-              trend="up"
             />
           </div>
         )}

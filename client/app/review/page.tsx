@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Navbar from '@/components/layout/Navbar'
 import CodeEditor from '@/components/editor/Codeeditor'
 import LanguageSelector from '@/components/editor/LanguageSelector'
@@ -19,7 +19,14 @@ import {
 export default function ReviewPage() {
   const [code, setCode] = useState('// Paste your code here...')
   const [language, setLanguage] = useState('javascript')
-  const { review, loading, error, startReview } = useReview()
+  const { review, loading, error, startReview, loadReview } = useReview()
+
+  // Opened from dashboard history: /review?id=<reviewId>
+  useEffect(() => {
+    const id = new URLSearchParams(window.location.search).get('id')
+    if (id) loadReview(id)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
   const [mobileTab, setMobileTab] = useState<'editor' | 'review'>('editor')
 
   const handleSubmit = () => {
@@ -387,7 +394,7 @@ export default function ReviewPage() {
           { label: language.toUpperCase(), color: '#a78bfa' },
           { label: `${lineCount} lines`, color: 'rgba(255,255,255,0.3)' },
           { label: 'UTF-8', color: 'rgba(255,255,255,0.3)' },
-          { label: 'Claude AI', color: '#f472b6' },
+          { label: 'Gemini AI', color: '#f472b6' },
         ].map(({ label, color }) => (
           <span
             key={label}

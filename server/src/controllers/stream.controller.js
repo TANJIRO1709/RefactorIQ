@@ -8,9 +8,8 @@ export const streamCodeReview = async (req, res) => {
     res.setHeader("Cache-Control", "no-cache");
     res.setHeader("Connection", "keep-alive");
 
+    // streamReview ends the response itself
     await streamReview(code, language, res);
-
-    res.end();
   } catch (error) {
     console.log(error);
 

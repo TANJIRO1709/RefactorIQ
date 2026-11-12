@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: refactoriq-api
+    runtime: node
+    rootDir: server
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: MONGO_URI
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      # Your Vercel URL(s), comma-separated, e.g. https://refactoriq.vercel.app
+      - key: CLIENT_URL
+        sync: false

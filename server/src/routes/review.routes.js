@@ -1,6 +1,11 @@
 import express from "express";
 import protect from "../middleware/auth.middleware.js";
-import { createReview } from "../controllers/review.controller.js";
+import {
+  createReview,
+  getMyReviews,
+  getMyStats,
+  getReviewById,
+} from "../controllers/review.controller.js";
 import {
   analyzePR,
   analyzeRepo,
@@ -9,16 +14,25 @@ import {
 
 const router = express.Router();
 
-// Existing: paste code review
+router.use(protect);
+
+// Paste code review
 router.post("/", createReview);
 
-// Existing: PR review
+// Dashboard
+router.get("/", getMyReviews);
+router.get("/stats", getMyStats);
+
+// PR review
 router.post("/pr", analyzePR);
 
-// NEW: Full repo review (non-streaming JSON)
+// Full repo review (non-streaming JSON)
 router.post("/repo", analyzeRepo);
 
-// NEW: Full repo review (streaming SSE) ← use this for the UI
+// Full repo review (streaming SSE) ← used by the UI
 router.post("/repo/stream", analyzeRepoStream);
+
+// Must stay last so it doesn't shadow /stats
+router.get("/:id", getReviewById);
 
 export default router;

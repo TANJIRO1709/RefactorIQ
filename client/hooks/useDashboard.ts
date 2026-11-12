@@ -13,13 +13,13 @@ export function useDashboard() {
     const fetchData = async () => {
       try {
         const [reviewRes, statsRes] = await Promise.all([
-          api.get<Review[]>('/api/reviews'),
-          api.get<ReviewStats>('/api/reviews/stats'),
+          api.get<Review[]>('/api/review'),
+          api.get<ReviewStats>('/api/review/stats'),
         ])
         setReviews(reviewRes.data)
         setStats(statsRes.data)
-      } catch (err: any) {
-        setError(err.message)
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to load dashboard')
       } finally {
         setLoading(false)
       }

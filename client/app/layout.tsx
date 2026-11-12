@@ -4,8 +4,8 @@ import Providers from '@/components/layout/Providers'
 
 export const metadata: Metadata = {
   title: 'ReviewForge — AI Code Intelligence',
-  description: 'AI-powered code review, security detection, and developer mentorship platform powered by Claude.',
-  keywords: ['code review', 'AI', 'security', 'developer tools', 'Claude AI'],
+  description: 'AI-powered code review, security detection, and developer mentorship platform.',
+  keywords: ['code review', 'AI', 'security', 'developer tools'],
 }
 
 export default function RootLayout({

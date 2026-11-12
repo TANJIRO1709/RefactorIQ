@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import Navbar from '@/components/layout/Navbar'
+import { API_URL, authHeader } from '@/lib/api'
 import {
   Github, Loader2, ChevronDown, ChevronUp,
   Zap, CheckCircle2, AlertTriangle, FileCode2,
@@ -159,15 +160,15 @@ export default function RepoReviewPage() {
     setIsStreaming(true)
 
     try {
-      const res = await fetch('/api/review/repo/stream', {
+      const res = await fetch(`${API_URL}/api/review/repo/stream`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...(await authHeader()) },
         body: JSON.stringify({ repoUrl: repoUrl.trim(), token: token.trim() || undefined }),
       })
 
       if (!res.ok) {
-        const err = await res.json()
-        throw new Error(err.message || 'Request failed')
+        const err = await res.json().catch(() => ({}))
+        throw new Error(err.message || `Request failed (${res.status})`)
       }
 
       const reader  = res.body!.getReader()
@@ -594,7 +595,7 @@ export default function RepoReviewPage() {
           { label:'REPO REVIEW',  color:'#a78bfa' },
           { label: meta ? `${meta.totalFiles} files` : '0 files', color:'rgba(255,255,255,0.3)' },
           { label:'GitHub API',  color:'rgba(255,255,255,0.3)' },
-          { label:'Claude AI',   color:'#f472b6' },
+          { label:'Gemini AI',   color:'#f472b6' },
         ].map(({ label, color }) => (
           <span key={label} style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:10, color, letterSpacing:'0.06em' }}>
             {label}

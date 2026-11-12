@@ -1,39 +1,26 @@
+// Mirrors server/src/models/Review.js
 export interface Review {
-  _id:       string
-  userId:    string
-  code:      string
-  language:  string
-  result:    string           // raw markdown from AI
-  issues:    Issue[]
-  score:     number           // 0–100
-  createdAt: string
+  _id:          string
+  language:     string
+  originalCode: string
+  reviewedCode?: string
+  summary?:     string
+  score?:       number | null   // 0–100
+  issues:       Issue[]
+  createdAt:    string
 }
 
 export interface Issue {
-  type:        'bug' | 'security' | 'performance' | 'style'
-  severity:    'critical' | 'warning' | 'info'
-  title:       string
-  description: string
-  line?:       number
-  fix?:        string
-  resources?:  Resource[]
-}
-
-export interface Resource {
-  title: string
-  url:   string
-}
-
-export interface User {
-  id:    string
-  name:  string
-  email: string
-  image: string
+  type:     string            // bug | security | performance | style
+  severity: string            // Critical | High | Medium | Low
+  line?:    number
+  message:  string
 }
 
 export interface ReviewStats {
   totalReviews:  number
   avgScore:      number
+  totalIssues:   number
   issuesByType:  Record<string, number>
   topLanguages:  { language: string; count: number }[]
   trend:         { date: string; score: number }[]
